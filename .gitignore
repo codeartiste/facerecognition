@@ -8,9 +8,16 @@ __pycache__/
 
 
 # Images
-images/*.jpg
-images/*.JPG
+images/*
+images/*
 
+#DS Store
+.DS_Store*
+
+
+#Don't include models
+*.tflite
+*model
 # Distribution / packaging
 .Python
 build/
