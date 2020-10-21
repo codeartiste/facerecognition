@@ -9,13 +9,14 @@ from cv2 import rectangle
 
 import os
 import sys
+import cv2
+import glob
 
 # check opencv version
-import cv2
 # print version number
 print(cv2.__version__)
 
-directory_name = ""
+directory_name = "" # If you don't give an argument populate this
 
 print(f"Arguments count: {len(sys.argv)}")
 for i, arg in enumerate(sys.argv):
@@ -24,18 +25,19 @@ for i, arg in enumerate(sys.argv):
         directory_name = sys.argv[i]
 
 
-import glob
-files = glob.glob(directory_name)
+
+files = glob.glob(directory_name + "/*.jpg")
+#Debug print
 print(files)
+
 for fname in files:
     count = 0
     # load the photograph
-    #name = 'test' + str(x)
     pixels = imread(fname)
     #percent by which the image is resized
     scale_percent = 25
     if pixels.shape[1] > 1500 :
-        #calculate the 50 percent of original dimensions
+        #calculate the scaled percent of original dimensions
         width = int(pixels.shape[1] * scale_percent / 100)
         height = int(pixels.shape[0] * scale_percent / 100)
         print(width)
@@ -53,22 +55,21 @@ for fname in files:
     # load the pre-trained model
     classifier = CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
     # perform face detection
-    bboxes = classifier.detectMultiScale(gray, 1.25, 6)
+    bboxes = classifier.detectMultiScale(gray, 1.22, 6)
     # print bounding box for each detected face
     for box in bboxes:
         print (box)
         # extract
         x, y, width, height = box
         x2, y2 = x + width, y + height
-        # draw a rectangle over the pixels
+        # cut a rectangle over the pixels
         roi = scaled_pixels[y:y2, x:x2]
         imwrite('images/rects/'+ os.path.split(fname)[-1] +'_' +str(count) +'.jpg', roi)
-        
         #rectangle(scaled_pixels, (x, y), (x2, y2), (0,0,255), 2)
-        
         count = count + 1
-            
-    # show the image
+     
+    #Debug a
+    #show the image
     #imshow('face detection', scaled_pixels)
     # keep the window open until we press a key
     #waitKey(0)

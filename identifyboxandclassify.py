@@ -40,7 +40,7 @@ import glob
 files = glob.glob(directory_name + "/*.jpg")
 #print(files)
 
-class_names= ['J', 'N', 'S']
+class_names= ['JJ', 'NN', 'OTH' ,'SNA', 'SSH']
 
 
 model = tf.keras.models.load_model('friendsfacemodel')
@@ -94,7 +94,7 @@ for fname in files:
         font = cv2.FONT_HERSHEY_SIMPLEX
         cv2.putText(
         scaled_pixels,class_names[np.argmax(predictions[0])] + ' ' +
-        str(int(100 * np.max(score))) + '%' ,(x2,y2), font, 1,(0,255,0),1,cv2.LINE_AA
+        str(int(100 * np.max(score))) + '%' ,(x2,y2), font, 0.5,(0,255,0),1,cv2.LINE_4
         )
         rectangle(scaled_pixels, (x, y), (x2, y2), (0,0,255), 1)
         

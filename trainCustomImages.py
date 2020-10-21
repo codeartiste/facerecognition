@@ -6,6 +6,7 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import preprocessing
 from tensorflow.keras.preprocessing import image_dataset_from_directory
+from keras.callbacks import EarlyStopping
 
 from tensorflow.keras import layers
 from tensorflow.keras.models import Sequential
@@ -21,7 +22,7 @@ batch_size = 32
 img_height = 180
 img_width = 180
 
-seedX = 191
+seedX = 209
 
 train_ds = image_dataset_from_directory(
   data_dir,
@@ -66,9 +67,28 @@ AUTOTUNE = tf.data.experimental.AUTOTUNE
 train_ds = train_ds.cache().prefetch(buffer_size=AUTOTUNE)
 val_ds = val_ds.cache().prefetch(buffer_size=AUTOTUNE)
 
-num_classes = 3
+#data augumentation
+'''
+data_augmentation = tf.keras.Sequential([
+  layers.experimental.preprocessing.RandomFlip("horizontal_and_vertical"),
+  layers.experimental.preprocessing.RandomRotation(0.2),
+])
+'''
+data_augmentation = keras.Sequential(
+  [
+    layers.experimental.preprocessing.RandomFlip("horizontal",
+                                                 input_shape=(img_height,
+                                                              img_width,
+                                                              1)),
+    layers.experimental.preprocessing.RandomRotation(0.1),
+    layers.experimental.preprocessing.RandomZoom(0.1),
+  ]
+)
+
+num_classes = len(class_names)
 
 model = tf.keras.Sequential([
+  data_augmentation,
   layers.experimental.preprocessing.Rescaling(1./255),
   layers.Conv2D(32, 3, activation='relu'),
   layers.MaxPooling2D(),
@@ -87,11 +107,14 @@ model.compile(
   loss=tf.losses.SparseCategoricalCrossentropy(from_logits=True),
   metrics=['accuracy'])
   
+# simple early stopping
+es = EarlyStopping(monitor='val_accuracy', mode='max', verbose=1, patience= 25, restore_best_weights=False)
+  
 
 model.fit(
   train_ds,
   validation_data=val_ds,
-  epochs=18
+  epochs=4000, callbacks=[es]
 )
 print (model.summary())
 test_loss, test_acc = model.evaluate(val_ds, verbose=2)
