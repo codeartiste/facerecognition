@@ -13,8 +13,8 @@ from tensorflow.keras.models import Sequential
 
 import pathlib
 
-data_dir = pathlib.Path("images/friends_photos")
-image_count = len(list(data_dir.glob('*/*.jpg')))
+data_dir = pathlib.Path("images/friends_photos/")
+image_count = len(list(data_dir.glob('*.jpg')))
 print(image_count)
 
 
